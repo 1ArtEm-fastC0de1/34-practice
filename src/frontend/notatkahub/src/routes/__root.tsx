@@ -10,7 +10,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <div className="min-h-[100vh] bg-[var(--color-background)] dark:bg-[var(--color-background-dark)]">
+    <div className="min-h-screen bg-[var(--color-background)] dark:bg-[var(--color-background-dark)]">
       <Outlet />
       <TanStackDevtools
         config={{

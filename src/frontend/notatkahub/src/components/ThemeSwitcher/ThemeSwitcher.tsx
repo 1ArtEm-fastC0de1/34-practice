@@ -21,7 +21,7 @@ const ThemeSwitcher = () => {
   };
   return (
     <button
-      className="flex items-center justify-between gap-1 font-semibold text-orange-400"
+      className="flex items-center gap-1 font-semibold text-orange-400"
       onClick={handleTheme}
     >
       {theme === "light" ? (

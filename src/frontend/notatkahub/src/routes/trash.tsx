@@ -1,11 +1,12 @@
-import "../styles/fonts.css";
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/trash")({
+  component: RouteComponent,
+});
 
-function App() {
+function RouteComponent() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header></Header>
