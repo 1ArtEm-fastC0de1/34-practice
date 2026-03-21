@@ -3,9 +3,15 @@ import { Link } from "@tanstack/react-router";
 import { CiStickyNote } from "react-icons/ci";
 import { FaTrashAlt } from "react-icons/fa";
 
-const Sidebar = () => {
+interface Props {
+  isModalSidebarOpened: boolean;
+}
+
+const Sidebar = ({ isModalSidebarOpened }: Props) => {
   return (
-    <aside className="flex min-h-full w-50 flex-col gap-4 bg-[var(--color-background-bar)] px-2.75 py-2.5 dark:bg-[var(--color-background-bar-dark)]">
+    <aside
+      className={`top-16.5 z-50 flex min-h-full w-50 flex-col gap-4 bg-[var(--color-background-bar)] px-2.75 py-2.5 transition-all max-xl:absolute dark:bg-[var(--color-background-bar-dark)] ${isModalSidebarOpened ? "max-xl:left-0" : "max-xl:-left-50"}`}
+    >
       <div className="px-2.5">
         <ThemeSwitcher />
       </div>

@@ -9,14 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TravelerRouteImport } from './routes/traveler'
 import { Route as TrashRouteImport } from './routes/trash'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as NotFoundRouteImport } from './routes/notFound'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CreateNoteRouteImport } from './routes/createNote'
+import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TravelerRoute = TravelerRouteImport.update({
+  id: '/traveler',
+  path: '/traveler',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrashRoute = TrashRouteImport.update({
   id: '/trash',
   path: '/trash',
@@ -47,6 +54,11 @@ const CreateNoteRoute = CreateNoteRouteImport.update({
   path: '/createNote',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AddRoute = AddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,74 +67,95 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/createNote': typeof CreateNoteRoute
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/trash': typeof TrashRoute
+  '/traveler': typeof TravelerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/createNote': typeof CreateNoteRoute
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/trash': typeof TrashRoute
+  '/traveler': typeof TravelerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/createNote': typeof CreateNoteRoute
   '/login': typeof LoginRoute
   '/notFound': typeof NotFoundRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/trash': typeof TrashRoute
+  '/traveler': typeof TravelerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/add'
     | '/createNote'
     | '/login'
     | '/notFound'
     | '/profile'
     | '/signup'
     | '/trash'
+    | '/traveler'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/add'
     | '/createNote'
     | '/login'
     | '/notFound'
     | '/profile'
     | '/signup'
     | '/trash'
+    | '/traveler'
   id:
     | '__root__'
     | '/'
+    | '/add'
     | '/createNote'
     | '/login'
     | '/notFound'
     | '/profile'
     | '/signup'
     | '/trash'
+    | '/traveler'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRoute: typeof AddRoute
   CreateNoteRoute: typeof CreateNoteRoute
   LoginRoute: typeof LoginRoute
   NotFoundRoute: typeof NotFoundRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   TrashRoute: typeof TrashRoute
+  TravelerRoute: typeof TravelerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/traveler': {
+      id: '/traveler'
+      path: '/traveler'
+      fullPath: '/traveler'
+      preLoaderRoute: typeof TravelerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trash': {
       id: '/trash'
       path: '/trash'
@@ -165,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateNoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/add': {
+      id: '/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,12 +217,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRoute: AddRoute,
   CreateNoteRoute: CreateNoteRoute,
   LoginRoute: LoginRoute,
   NotFoundRoute: NotFoundRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   TrashRoute: TrashRoute,
+  TravelerRoute: TravelerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

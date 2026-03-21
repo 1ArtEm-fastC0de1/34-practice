@@ -6,7 +6,7 @@ export const Route = createFileRoute("/notFound")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
+export default function RouteComponent() {
   const router = useRouter();
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -72,12 +72,12 @@ function RouteComponent() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center py-10">
-          <hr className="text-orange-300" />
-          <h3 className="px-15 text-center text-xl font-medium text-neutral-400">
+        <div className="flex flex-col items-center py-5">
+          <hr className="w-[80%] text-orange-300" />
+          <h3 className="px-15 py-3 text-center text-xl font-medium text-neutral-400">
             We couldn't find the page you were looking for. Go back or home page
           </h3>
-          <hr className="text-orange-300" />
+          <hr className="w-[80%] text-orange-300" />
         </div>
       )}
 
