@@ -1,6 +1,6 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/profile")({
@@ -50,9 +50,12 @@ function RouteComponent() {
               <button className="w-[60%] cursor-pointer rounded-lg bg-orange-400 px-2 py-2 font-medium text-white max-xl:w-full">
                 Logout
               </button>{" "}
-              <button className="w-[60%] cursor-pointer rounded-lg border border-orange-400 px-2 py-2 font-bold text-orange-400 max-xl:w-full">
+              <Link
+                to="/add"
+                className="w-[60%] cursor-pointer rounded-lg border border-orange-400 px-2 py-2 font-bold text-orange-400 max-xl:w-full"
+              >
                 About NOTATKAHUB
-              </button>
+              </Link>
             </div>
           )}
         </div>
