@@ -10,13 +10,3 @@
   justify-content: center;
   z-index: 1000;
 }
-
-.modal {
-  background-color: #ffffff;
-  padding: 24px;
-  border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-  position: relative;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}

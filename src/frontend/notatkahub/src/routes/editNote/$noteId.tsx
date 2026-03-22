@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
 
-export const Route = createFileRoute("/createNote")({
+export const Route = createFileRoute("/editNote/$noteId")({
   component: RouteComponent,
 });
 
@@ -155,7 +155,7 @@ function RouteComponent() {
                   Cancel
                 </Link>
                 <button className="flex h-10 w-25 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
-                  Crate note
+                  Update note
                 </button>
               </div>
             </>
@@ -190,7 +190,7 @@ function RouteComponent() {
                     Cancel creating
                   </Link>
                   <button className="flex h-10 w-40 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
-                    Crate note
+                    Update note
                   </button>
                 </div>
               </div>

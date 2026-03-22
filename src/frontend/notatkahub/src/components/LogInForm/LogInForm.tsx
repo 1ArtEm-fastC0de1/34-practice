@@ -1,7 +1,7 @@
 import css from "./LogInForm.module.css";
 
 const LogInForm = () => {
-  const handleSubmit = () => {};
+  const handleSubmit = (formData: FormData) => {};
   return (
     <form action={handleSubmit} className="flex w-full flex-col gap-5">
       <input

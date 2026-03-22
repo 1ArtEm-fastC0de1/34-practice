@@ -22,14 +22,16 @@ export default function Header({ openModalSidebar }: Props) {
     <header className="dark:border-b-border-bars-dark border-b-border-bars flex items-center justify-between border-b bg-[var(--color-background-bar)] px-[15px] py-[10px] dark:bg-[var(--color-background-bar-dark)]">
       {windowWidth < 1280 ? (
         <>
-          <svg
-            height={20}
-            width={30}
-            className="cursor-pointer"
-            onClick={openModalSidebar}
-          >
-            <use href="/burger.svg" />
-          </svg>
+          {location.pathname != "/createNote" && (
+            <svg
+              height={20}
+              width={30}
+              className="cursor-pointer"
+              onClick={openModalSidebar}
+            >
+              <use href="/burger.svg" />
+            </svg>
+          )}
           <Logo />
           <Link to="/profile" className="flex items-center justify-center">
             <svg width={38} height={38}>

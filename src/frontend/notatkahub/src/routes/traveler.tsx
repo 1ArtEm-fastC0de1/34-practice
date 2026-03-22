@@ -60,17 +60,17 @@ function RouteComponent() {
         >
           Home
         </Link>
-      </div>
-      <div className="absolute bottom-0 left-0 flex items-center justify-center gap-5">
-        <h3 className="font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
-          *Maksym. S
-        </h3>
-        <a
-          href="https://youtu.be/dQw4w9WgXcQ?si=hVQGxazPHI-wbuRm"
-          target="_blank"
-        >
-          <img src="/traveler.png" width={100} height={50} alt="traveler" />
-        </a>
+        <div className="flex items-center gap-5 self-start">
+          <h3 className="font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+            *Maksym. S
+          </h3>
+          <a
+            href="https://youtu.be/dQw4w9WgXcQ?si=hVQGxazPHI-wbuRm"
+            target="_blank"
+          >
+            <img src="/traveler.png" width={100} height={50} alt="traveler" />
+          </a>
+        </div>
       </div>
     </div>
   );
