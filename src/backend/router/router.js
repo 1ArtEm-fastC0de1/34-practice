@@ -153,7 +153,7 @@ routs.post('/auth/logout', (req, res) => userService.logout(req, res))
  * @swagger
  * /auth/activate/{link}:
  *   get:
- *     summary: Активація акаунту через email
+ *     summary: Активація акаунту через email, не працює під час використання віддаленого сервера
  *     tags: [Auth]
  *     parameters:
  *       - in: path
