@@ -806,4 +806,83 @@ routs.get('/trash/search', authMidleware, noteServise.searchTrashNote)
  */
 routs.delete('/trash/deleteNote/:id', authMidleware, noteServise.deleteNote)
 
+/**
+ * @swagger
+ * /auth/updateUser:
+ *   patch:
+ *     summary: Оновлення даних профілю користувача
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "new_email@gmail.com"
+ *                 description: Новий email (якщо порожньо, залишиться старий)
+ *               username:
+ *                 type: string
+ *                 example: "_new_username"
+ *                 description: Нове ім'я користувача (якщо порожньо, залишиться старе)
+ *     responses:
+ *       200:
+ *         description: Дані профілю успішно оновлено
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Помилка валідації (неправильний формат email)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Bad Request"
+ *                 message:
+ *                   type: string
+ *                   example: "Неправильний формат email"
+ *       401:
+ *         description: Користувач не авторизований
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "unauthoraize"
+ *                 message:
+ *                   type: string
+ *                   example: "користувач не авторизован"
+ *       409:
+ *         description: Конфлікт (Email або Username вже зайняті іншим користувачем)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Conflict"
+ *                 message:
+ *                   type: string
+ *                   example: "Користувач з таким email або username вже існує"
+ *       500:
+ *         description: Помилка сервера
+ */
+routs.patch('/user/update', authMidleware, userService.updateUserData)
+
+
 module.exports = routs
