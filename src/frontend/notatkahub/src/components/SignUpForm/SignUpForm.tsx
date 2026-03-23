@@ -6,13 +6,13 @@ import { deviceType, osName, browserName } from "react-device-detect";
 
 const SignUpForm = () => {
   const navigation = useNavigate();
-  const registerMutation = useMutation({
-    mutationFn: register,
-    onSuccess: async () => {
-      console.log("User was registered!");
-      await navigation({ to: "/" });
-    },
-  });
+  // const registerMutation = useMutation({
+  //   mutationFn: register,
+  //   onSuccess: async () => {
+  //     console.log("User was registered!");
+  //     await navigation({ to: "/" });
+  //   },
+  // });
   const handleSubmit = async (formData: FormData) => {
     const username = formData.get("username") as string;
     const email = formData.get("email") as string;
@@ -26,8 +26,13 @@ const SignUpForm = () => {
       password,
       device: `${userDeviceType} ${userOsName} ${userBrowserName}`,
     };
-
-    registerMutation.mutate(user);
+    try {
+      register(user);
+      console.log(user);
+    } catch (error) {
+      console.log(error);
+    }
+    // registerMutation.mutate(user);
   };
   return (
     <form action={handleSubmit} className="flex w-full flex-col gap-5">

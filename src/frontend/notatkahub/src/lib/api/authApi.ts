@@ -23,3 +23,20 @@ export const register = async ({
   });
   return responce;
 };
+
+type LoginUserRequest = {
+  email: string;
+  password: string;
+};
+
+export const login = async ({ email, password }: LoginUserRequest) => {
+  const responce = await api.post(`/auth/login`, {
+    params: {
+      email,
+      password,
+    },
+  });
+  return responce;
+};
+
+export const logout = async () => {};
