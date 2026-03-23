@@ -30,8 +30,8 @@ class UserService {
 
             const hashPassword = await bcrypt.hash(password, 10)
             const activationLink = uuid.v4()
-
-            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`)
+            // не працюе під час використаня віддаленого сервера
+            // await mailService.sendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`)
 
             const user = await userModel.create({
                 userName: username,

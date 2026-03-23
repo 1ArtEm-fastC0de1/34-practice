@@ -10,7 +10,7 @@ const stub = (req, res) => res.send('В розробці');
  * @swagger
  * /auth/registration:
  *   post:
- *     summary: Реєстрація користувача
+ *     summary: Реєстрація користувача, відправка активаційного листа на віддаленому сервері не працює
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -153,7 +153,7 @@ routs.post('/auth/logout', (req, res) => userService.logout(req, res))
  * @swagger
  * /auth/activate/{link}:
  *   get:
- *     summary: Активація акаунту через email
+ *     summary: Активація акаунту через email, не працює під час використання віддаленого сервера
  *     tags: [Auth]
  *     parameters:
  *       - in: path
