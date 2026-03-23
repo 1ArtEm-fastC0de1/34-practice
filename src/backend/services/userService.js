@@ -60,6 +60,7 @@ class UserService {
             })
         } catch (error) {
             console.error(error)
+            return res.status(500).json({ message: "Помилка реєстрації" });
         }
     }
     
@@ -110,6 +111,7 @@ class UserService {
             })
         } catch (error) {
             console.error(error)
+            return res.status(500).json({ message: "Помилка входу у профіль" });
         }
     }
 
@@ -126,6 +128,7 @@ class UserService {
             })
         } catch (error) {
             console.error(error)
+            return res.status(500).json({ message: "Помилка виходу з профілю" });
         }
     }
 
@@ -161,6 +164,62 @@ class UserService {
             `);
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    async updateUserData(req, res)  {
+        try {
+            const userId = req.user.id
+            const email = req.body.email || req.user.email;
+            const username = req.body.username || req.user.userName;
+
+            if(!validateEmail(email)) {
+                return res.status(400).json({
+                    error: 'Bad Request',
+                    message: 'Неправильний формат email'
+                });
+            }
+
+            const candidate = await userModel.findOne({
+                _id: { $ne: userId },
+                $or: [{ userName: username }, { email: email }]
+            });
+            if(candidate) {
+                return res.status(409).json({
+                    error: 'Conflict',
+                    message: 'Користувач з таким email або username вже існує'
+                });
+            }
+
+            const user = await userModel.findById(userId)
+            if(!user) {
+                return res.status(401).json({
+                    error: "unauthoraize",
+                    message: "користувач не авторизован"
+                })
+            }
+            
+
+
+            const updatedUser = await userModel.findByIdAndUpdate(
+                userId,
+                {
+                    email: email,
+                    userName: username
+                },
+                {
+                    new: true
+                }
+            )
+
+            const userDto = new UserDTO(updatedUser)
+
+            return res.status(200).json({
+                user: userDto
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ message: "Помилка оновлення профілю" });
         }
     }
 
@@ -205,6 +264,7 @@ class UserService {
             })
         } catch (error) {
             console.error(error)
+            return res.status(500).json({ message: "Помилка рефреш" });
         }
     }
 }
