@@ -1,13 +1,22 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useUserStore } from "#/lib/store/userStore";
+import { updateUser, logout } from "#/lib/api/authApi";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 export const Route = createFileRoute("/profile")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+
+  const user = useUserStore((state) => state.user);
+  const clearUserStore = useUserStore((state) => state.clearUserStore);
+  const setUserStore = useUserStore((state) => state.setUserStore);
+
   const [isModalSidebarOpened, setOpenedModalSidebar] = useState(false);
 
   const handleOpenModalSidebar = () => {
@@ -23,7 +32,28 @@ function RouteComponent() {
     };
   }, []);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (formData: FormData) => {
+    const username = (formData.get("username") as string) || "";
+    const email = (formData.get("email") as string) || "";
+    try {
+      await updateUser(email, username);
+      if (username) setUserStore({ ...user, username });
+      if (email) setUserStore({ ...user, email });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLogout = async () => {
+    clearUserStore();
+    Cookies.remove("accessToken");
+    navigate({ to: "/login" });
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <Header openModalSidebar={handleOpenModalSidebar} />
@@ -43,12 +73,15 @@ function RouteComponent() {
             />
             <div className="mb-6.75 flex flex-col gap-3 font-bold text-neutral-500 dark:text-neutral-300">
               <h3>User Info</h3>
-              <h4>Username: TestUsername228</h4>
-              <h4>Email: email@gmail.com</h4>
+              <h4>Username: {user.username}</h4>
+              <h4>Email: {user.email}</h4>
             </div>
             {windowWidth >= 1280 && (
               <div className="flex w-full flex-col gap-2">
-                <button className="w-[60%] cursor-pointer rounded-lg bg-orange-400 px-2 py-2 text-center font-medium text-white max-xl:w-full">
+                <button
+                  onClick={handleLogout}
+                  className="w-[60%] cursor-pointer rounded-lg bg-orange-400 px-2 py-2 text-center font-medium text-white max-xl:w-full"
+                >
                   Logout
                 </button>{" "}
                 <Link
@@ -102,7 +135,10 @@ function RouteComponent() {
           </div>
           {windowWidth < 1280 && (
             <div className="flex w-full flex-row justify-between px-3.75">
-              <button className="w-1/3 max-w-50 cursor-pointer rounded-lg bg-orange-400 px-2 py-2 font-medium text-white">
+              <button
+                onClick={handleLogout}
+                className="w-1/3 max-w-50 cursor-pointer rounded-lg bg-orange-400 px-2 py-2 font-medium text-white"
+              >
                 Logout
               </button>
               <Link

@@ -33,7 +33,7 @@ export default function Modal({ children, handleClose }: ModalProps) {
       aria-modal="true"
       onClick={clickBackdropModal}
     >
-      <div className="relative w-full max-w-125 rounded-lg border border-[var(--color-border-bars)] bg-[var(--color-background-bars)] p-6 font-medium text-[var(--color-primary)] shadow-[0_5px_15px_rgba(0,0,0,0.3)] dark:border-[var(--color-border-bars-datk)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+      <div className="relative h-[80%] w-[90%] overflow-scroll rounded-lg border border-[var(--color-border-bars)] bg-[var(--color-background-bars)] p-6 font-medium text-[var(--color-primary)] shadow-[0_5px_15px_rgba(0,0,0,0.3)] dark:border-[var(--color-border-bars-datk)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
         {children}
       </div>
     </div>,

@@ -1,18 +1,23 @@
 import css from "./SignUpForm.module.css";
 import { register } from "#/lib/api/authApi";
-import { useMutation } from "@tanstack/react-query";
+import { useUserStore } from "#/lib/store/userStore";
 import { useNavigate } from "@tanstack/react-router";
 import { deviceType, osName, browserName } from "react-device-detect";
+import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 const SignUpForm = () => {
+  const setUserStore = useUserStore((state) => state.setUserStore);
+
   const navigation = useNavigate();
-  // const registerMutation = useMutation({
-  //   mutationFn: register,
-  //   onSuccess: async () => {
-  //     console.log("User was registered!");
-  //     await navigation({ to: "/" });
-  //   },
-  // });
+
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+    if (accessToken) {
+      navigation({ to: "/" });
+    }
+  }, []);
+
   const handleSubmit = async (formData: FormData) => {
     const username = formData.get("username") as string;
     const email = formData.get("email") as string;
@@ -27,12 +32,17 @@ const SignUpForm = () => {
       device: `${userDeviceType} ${userOsName} ${userBrowserName}`,
     };
     try {
-      register(user);
-      console.log(user);
+      const responce = await register(user);
+      setUserStore({
+        username: responce.user.username,
+        email: responce.user.email,
+      });
+      console.log(responce);
+      Cookies.set("accessToken", responce.accesToken, { expires: 1 });
+      await navigation({ to: "/" });
     } catch (error) {
       console.log(error);
     }
-    // registerMutation.mutate(user);
   };
   return (
     <form action={handleSubmit} className="flex w-full flex-col gap-5">

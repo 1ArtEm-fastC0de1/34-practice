@@ -1,3 +1,4 @@
+import axios from "axios";
 import { api } from "./api";
 
 type RegisterUserRequest = {
@@ -14,29 +15,47 @@ export const register = async ({
   device,
 }: RegisterUserRequest) => {
   const responce = await api.post(`/auth/registration`, {
-    params: {
-      username,
-      email,
-      password,
-      device,
-    },
+    username,
+    email,
+    password,
+    device,
   });
-  return responce;
+  return responce.data;
 };
 
 type LoginUserRequest = {
   email: string;
   password: string;
+  device: string;
 };
 
-export const login = async ({ email, password }: LoginUserRequest) => {
+export const login = async ({ email, password, device }: LoginUserRequest) => {
   const responce = await api.post(`/auth/login`, {
-    params: {
-      email,
-      password,
-    },
+    email,
+    password,
+    device,
   });
-  return responce;
+  return responce.data;
 };
 
-export const logout = async () => {};
+export const logout = async () => {
+  const responce = await api.post(`/auth/logout`);
+  return responce.data;
+};
+
+export const refresh = async () => {
+  const response = await axios.post(
+    "https://three4-practice.onrender.com/api/token/refresh",
+    {},
+    { withCredentials: true },
+  );
+  return response.data;
+};
+
+export const updateUser = async (email?: string, username?: string) => {
+  const responce = await api.patch("/user/update", {
+    email,
+    username,
+  });
+  return responce.data;
+};

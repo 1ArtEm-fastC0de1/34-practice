@@ -1,6 +1,7 @@
 import Header from "#/components/Header";
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useNoteDraftStore } from "#/lib/store/draft";
+import { createNote } from "#/lib/api/notesApi";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
@@ -10,10 +11,14 @@ export const Route = createFileRoute("/createNote")({
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+
   const draft = useNoteDraftStore((state) => state.draft);
   const setDraft = useNoteDraftStore((state) => state.setDraft);
   const clearDraft = useNoteDraftStore((state) => state.clearDraft);
 
+  const [noteTitle, setNoteTitle] = useState(draft.title || "");
+  const [noteContent, setNoteContent] = useState(draft.content || "");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [createMode, setCreateMode] = useState<"edit" | "view">("edit");
   const [availableSymbolos, setAvailableSymbols] = useState(
@@ -44,6 +49,8 @@ function RouteComponent() {
         .trim();
 
       setDraft({ title, content });
+      setNoteTitle(title);
+      setNoteContent(content);
       setAvailableSymbols(3000 - content.length);
     };
     reader.readAsText(file);
@@ -57,7 +64,15 @@ function RouteComponent() {
     };
   }, []);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    try {
+      await createNote({ title, content });
+      clearDraft();
+      navigate({ to: "/" });
+    } catch {}
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -105,6 +120,7 @@ function RouteComponent() {
               {createMode == "edit" ? (
                 <form
                   action={handleSubmit}
+                  id="create-note-mobile"
                   className="flex w-full flex-col gap-2.5"
                 >
                   <input
@@ -112,12 +128,9 @@ function RouteComponent() {
                     name="title"
                     type="text"
                     placeholder="Title"
-                    defaultValue={draft.title}
+                    value={noteTitle}
                     onChange={(e) => {
-                      setDraft({
-                        ...draft,
-                        [e.target.name]: e.target.value,
-                      });
+                      setNoteTitle(e.target.value);
                       setAvailableSymbols(3000 - e.target.value.length);
                     }}
                   />
@@ -128,12 +141,9 @@ function RouteComponent() {
                       placeholder="Description"
                       id="content"
                       maxLength={3000}
-                      defaultValue={draft.content}
+                      value={noteContent}
                       onChange={(e) => {
-                        setDraft({
-                          ...draft,
-                          [e.target.name]: e.target.value,
-                        });
+                        setNoteContent(e.target.value);
                         setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
@@ -144,7 +154,7 @@ function RouteComponent() {
                 </form>
               ) : (
                 <div className="max-xl:prose dark:prose-invert h-200 w-full min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
-                  <Markdown>{`# ${draft.title}\n\n${draft.content}`}</Markdown>
+                  <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
               <div className="flex w-full justify-between">
@@ -154,8 +164,12 @@ function RouteComponent() {
                 >
                   Cancel
                 </Link>
-                <button className="flex h-10 w-25 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
-                  Crate note
+                <button
+                  type="submit"
+                  form="create-note-mobile"
+                  className="flex h-10 w-25 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]"
+                >
+                  Create note
                 </button>
               </div>
             </>
@@ -189,14 +203,19 @@ function RouteComponent() {
                   >
                     Cancel creating
                   </Link>
-                  <button className="flex h-10 w-40 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
-                    Crate note
+                  <button
+                    type="submit"
+                    form="create-note-desktop"
+                    className="flex h-10 w-40 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]"
+                  >
+                    Create note
                   </button>
                 </div>
               </div>
               {createMode == "edit" ? (
                 <form
                   action={handleSubmit}
+                  id="create-note-desktop"
                   className="flex w-full flex-col gap-2.5"
                 >
                   <input
@@ -204,12 +223,9 @@ function RouteComponent() {
                     name="title"
                     type="text"
                     placeholder="Title"
-                    defaultValue={draft.title}
+                    value={noteTitle}
                     onChange={(e) => {
-                      setDraft({
-                        ...draft,
-                        [e.target.name]: e.target.value,
-                      });
+                      setNoteTitle(e.target.value);
                       setAvailableSymbols(3000 - e.target.value.length);
                     }}
                   />
@@ -220,12 +236,9 @@ function RouteComponent() {
                       placeholder="Description"
                       id="content"
                       maxLength={3000}
-                      defaultValue={draft.content}
+                      value={noteContent}
                       onChange={(e) => {
-                        setDraft({
-                          ...draft,
-                          [e.target.name]: e.target.value,
-                        });
+                        setNoteContent(e.target.value);
                         setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
@@ -233,14 +246,17 @@ function RouteComponent() {
                 </form>
               ) : (
                 <div className="prose dark:prose-invert xl:prose-xl h-100 w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
-                  <Markdown>{`# ${draft.title}\n\n${draft.content}`}</Markdown>
+                  <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
               <div className="flex w-full flex-row items-center justify-between">
                 <p className="font-bold text-slate-400">
                   {availableSymbolos} symbols
                 </p>
-                <button className="flex w-33 cursor-pointer items-center justify-center gap-3 rounded-lg bg-white py-1.5 dark:border dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-33 cursor-pointer items-center justify-center gap-3 rounded-lg bg-white py-1.5 dark:border dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]"
+                >
                   <FiUploadCloud width={16} height={16} />
                   <span>Import MD</span>
                 </button>

@@ -1,6 +1,12 @@
 import Header from "#/components/Header";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useNoteDraftStore } from "#/lib/store/draft";
+import { getNoteById, updateNote } from "#/lib/api/notesApi";
+import {
+  createFileRoute,
+  Link,
+  useParams,
+  useNavigate,
+} from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
@@ -10,17 +16,27 @@ export const Route = createFileRoute("/editNote/$noteId")({
 });
 
 function RouteComponent() {
-  const draft = useNoteDraftStore((state) => state.draft);
-  const setDraft = useNoteDraftStore((state) => state.setDraft);
-  const clearDraft = useNoteDraftStore((state) => state.clearDraft);
+  const navigate = useNavigate();
 
+  const { noteId } = useParams({ from: "/editNote/$noteId" });
+  const { data } = useQuery({
+    queryFn: () => getNoteById(noteId),
+    queryKey: ["note"],
+  });
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteContent, setNoteContent] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [createMode, setCreateMode] = useState<"edit" | "view">("edit");
-  const [availableSymbolos, setAvailableSymbols] = useState(
-    3000 - draft.title.length - draft.content.length,
-  );
+  const [availableSymbolos, setAvailableSymbols] = useState(3000);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (data?.note) {
+      setNoteTitle(data.note.title);
+      setNoteContent(data.note.content);
+    }
+  }, [data]);
 
   const toggleChangeMode = () => {
     createMode == "edit" ? setCreateMode("view") : setCreateMode("edit");
@@ -43,8 +59,9 @@ function RouteComponent() {
         .join("\n")
         .trim();
 
-      setDraft({ title, content });
       setAvailableSymbols(3000 - content.length);
+      setNoteTitle(title);
+      setNoteContent(content);
     };
     reader.readAsText(file);
   };
@@ -57,7 +74,17 @@ function RouteComponent() {
     };
   }, []);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+
+    try {
+      await updateNote({ id: noteId, title, content });
+      navigate({ to: "/" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -104,6 +131,7 @@ function RouteComponent() {
               </div>
               {createMode == "edit" ? (
                 <form
+                  id="update-note-mobile"
                   action={handleSubmit}
                   className="flex w-full flex-col gap-2.5"
                 >
@@ -112,14 +140,8 @@ function RouteComponent() {
                     name="title"
                     type="text"
                     placeholder="Title"
-                    defaultValue={draft.title}
-                    onChange={(e) => {
-                      setDraft({
-                        ...draft,
-                        [e.target.name]: e.target.value,
-                      });
-                      setAvailableSymbols(3000 - e.target.value.length);
-                    }}
+                    value={noteTitle}
+                    onChange={(e) => setNoteTitle(e.target.value)}
                   />
                   <div className="flex flex-col gap-2">
                     <textarea
@@ -128,12 +150,9 @@ function RouteComponent() {
                       placeholder="Description"
                       id="content"
                       maxLength={3000}
-                      defaultValue={draft.content}
+                      value={noteContent}
                       onChange={(e) => {
-                        setDraft({
-                          ...draft,
-                          [e.target.name]: e.target.value,
-                        });
+                        setNoteContent(e.target.value);
                         setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
@@ -144,7 +163,7 @@ function RouteComponent() {
                 </form>
               ) : (
                 <div className="max-xl:prose dark:prose-invert h-200 w-full min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
-                  <Markdown>{`# ${draft.title}\n\n${draft.content}`}</Markdown>
+                  <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
               <div className="flex w-full justify-between">
@@ -154,7 +173,11 @@ function RouteComponent() {
                 >
                   Cancel
                 </Link>
-                <button className="flex h-10 w-25 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+                <button
+                  type="submit"
+                  form="update-note-mobile"
+                  className="flex h-10 w-25 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]"
+                >
                   Update note
                 </button>
               </div>
@@ -189,13 +212,18 @@ function RouteComponent() {
                   >
                     Cancel creating
                   </Link>
-                  <button className="flex h-10 w-40 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+                  <button
+                    type="submit"
+                    form="update-note-desktop"
+                    className="flex h-10 w-40 cursor-pointer items-center justify-center rounded-lg bg-orange-400 font-bold text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]"
+                  >
                     Update note
                   </button>
                 </div>
               </div>
               {createMode == "edit" ? (
                 <form
+                  id="update-note-desktop"
                   action={handleSubmit}
                   className="flex w-full flex-col gap-2.5"
                 >
@@ -204,14 +232,8 @@ function RouteComponent() {
                     name="title"
                     type="text"
                     placeholder="Title"
-                    defaultValue={draft.title}
-                    onChange={(e) => {
-                      setDraft({
-                        ...draft,
-                        [e.target.name]: e.target.value,
-                      });
-                      setAvailableSymbols(3000 - e.target.value.length);
-                    }}
+                    value={noteTitle}
+                    onChange={(e) => setNoteTitle(e.target.value)}
                   />
                   <div className="flex flex-col gap-2">
                     <textarea
@@ -220,12 +242,9 @@ function RouteComponent() {
                       placeholder="Description"
                       id="content"
                       maxLength={3000}
-                      defaultValue={draft.content}
+                      value={noteContent}
                       onChange={(e) => {
-                        setDraft({
-                          ...draft,
-                          [e.target.name]: e.target.value,
-                        });
+                        setNoteContent(e.target.value);
                         setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
@@ -233,14 +252,17 @@ function RouteComponent() {
                 </form>
               ) : (
                 <div className="prose dark:prose-invert xl:prose-xl h-100 w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
-                  <Markdown>{`# ${draft.title}\n\n${draft.content}`}</Markdown>
+                  <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
               <div className="flex w-full flex-row items-center justify-between">
                 <p className="font-bold text-slate-400">
                   {availableSymbolos} symbols
                 </p>
-                <button className="flex w-33 cursor-pointer items-center justify-center gap-3 rounded-lg bg-white py-1.5 dark:border dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex w-33 cursor-pointer items-center justify-center gap-3 rounded-lg bg-white py-1.5 dark:border dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]"
+                >
                   <FiUploadCloud width={16} height={16} />
                   <span>Import MD</span>
                 </button>

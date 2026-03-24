@@ -1,26 +1,41 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
-import DeletedNote from "#/components/DeletedNote/DeletedNote";
 import Modal from "#/components/Modal/Modal";
+import DeletedNote from "#/components/DeletedNote/DeletedNote";
 import MoreInfoNote from "#/components/MoreInfoNote/MoreInfoNote";
-import type { NoteModelInfo } from "#/types/note";
+import { getNotesFromTrash, deleteNoteFromTrash } from "#/lib/api/notesApi";
+import type { trashNotes } from "#/types/note";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { IoSearchOutline } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/trash")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [noteModal, setNoteModal] = useState<NoteModelInfo>({
-    noteId: "",
-    title: "",
-    content: "",
-  });
+  const [notes, setNotes] = useState<trashNotes[]>([]);
+  const [page, setPage] = useState(1);
+  const [noteModal, setNoteModal] = useState<string>();
   const [isViewedMorePaga, setIsViewedMorePage] = useState(false);
   const [isModalSidebarOpened, setOpenedModalSidebar] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  const limit = 12;
+
+  const { data } = useQuery({
+    queryFn: () => getNotesFromTrash({ page, limit }),
+    queryKey: ["trash-notes"],
+  });
+
+  useEffect(() => {
+    if (data?.notes) {
+      setNotes(data.notes);
+    }
+  }, [data]);
+
+  const totalPages = data?.totalPages;
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -30,11 +45,6 @@ function RouteComponent() {
     };
   }, []);
 
-  const openViewMorePage = ({ noteId, title, content }: NoteModelInfo) => {
-    setIsViewedMorePage(true);
-    setNoteModal({ title, content, noteId });
-  };
-
   const closeModal = () => {
     setIsViewedMorePage(false);
   };
@@ -43,6 +53,16 @@ function RouteComponent() {
     console.log(isModalSidebarOpened);
     setOpenedModalSidebar(!isModalSidebarOpened);
   };
+
+  const handleDeleteNote = async (id: string) => {
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+    try {
+      await deleteNoteFromTrash(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen flex-col">
       <Header openModalSidebar={handleOpenModalSidebar} />
@@ -79,80 +99,24 @@ function RouteComponent() {
             </div>
           )}
           <ul className="flex flex-row flex-wrap items-center justify-center gap-x-16.75 gap-y-5">
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
-            <DeletedNote
-              title="User feedback"
-              content="User feedback Several testers mentioned confusion in the settings panel. Navigation labels might need clearer"
-              noteId="jdf78snbjv"
-              isPinned={false}
-              handleView={openViewMorePage}
-            />
+            {notes.map((note) => (
+              <DeletedNote
+                key={note.id}
+                title={note.title}
+                content={note.content}
+                id={note.id}
+                handleView={(id: string) => {
+                  (setIsViewedMorePage(true), setNoteModal(id));
+                }}
+                handleDeleteNote={handleDeleteNote}
+              />
+            ))}
           </ul>
         </main>
       </div>
-      {isViewedMorePaga && (
+      {isViewedMorePaga && noteModal && (
         <Modal handleClose={closeModal}>
-          <MoreInfoNote
-            noteId={noteModal.noteId}
-            title={noteModal.title}
-            handleClose={closeModal}
-            content={noteModal.content}
-          />
+          <MoreInfoNote id={noteModal} handleClose={closeModal} />
         </Modal>
       )}
     </div>
