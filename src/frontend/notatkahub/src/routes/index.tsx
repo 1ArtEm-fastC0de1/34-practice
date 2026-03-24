@@ -40,15 +40,18 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-      const accessToken = Cookies.get("accessToken");
-      if (!accessToken) {
-        try {
-          const responce = await refresh();
-          Cookies.set("accessToken", responce.accessToken);
-        } catch {
-          navigate({ to: "/signup" });
-        }
-      }
+      const token = await refresh();
+      Cookies.set("accessToken", token.accessToken);
+      //  const accessToken = Cookies.get("accessToken");
+
+      // if (!accessToken) {
+      //   try {
+      //     const responce = await refresh();
+      //     Cookies.set("accessToken", responce.accessToken);
+      //   } catch {
+      //     navigate({ to: "/signup" });
+      //   }
+      // }
     };
     checkToken();
   }, []);
@@ -56,18 +59,14 @@ function App() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["notes", page],
     queryFn: () => getNotes({ page, limit }),
-  });
-
-  const { data: allNotesData } = useQuery({
-    queryKey: ["notes", "all"],
-    queryFn: () => getNotes({ page: 1, limit: 9999 }),
+    refetchOnMount: true,
+    staleTime: 0,
   });
 
   const totalPages = data?.totalPages;
-  const pinnedNotes = (allNotesData?.notes ?? []).filter(
-    (note: OneNote) => note.isPinned === true,
+  const sortedNotes = [...notes].sort(
+    (a, b) => Number(b.isPinned) - Number(a.isPinned),
   );
-  const unpinnedNotes = notes.filter((note) => note.isPinned === false);
 
   useEffect(() => {
     if (data?.notes) {
@@ -194,60 +193,22 @@ function App() {
             )}
             {notes.length != 0 ? (
               <div className="mb-10">
-                {pinnedNotes.length != 0 ? (
-                  <div className="flex flex-col items-center justify-center gap-4">
-                    <ul className="flex flex-row flex-wrap items-center justify-center gap-x-16.75 gap-y-5">
-                      {pinnedNotes.map((note: OneNote) => (
-                        <Note
-                          key={note.id}
-                          title={note.title}
-                          content={note.content}
-                          id={note.id}
-                          pin={note.isPinned}
-                          handleView={(id: string) => {
-                            (setIsViewedMorePage(true), setNoteModal(id));
-                          }}
-                          handlePinNote={handlePinNote}
-                          handleDeleteNote={handleDeleteNote}
-                        />
-                      ))}
-                    </ul>
-                    <hr className="w-full text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]" />
-                    <ul className="flex flex-row flex-wrap items-center justify-center gap-x-16.75 gap-y-5">
-                      {unpinnedNotes.map((note) => (
-                        <Note
-                          key={note.id}
-                          title={note.title}
-                          content={note.content}
-                          id={note.id}
-                          pin={note.isPinned}
-                          handleView={(id: string) => {
-                            (setIsViewedMorePage(true), setNoteModal(id));
-                          }}
-                          handlePinNote={handlePinNote}
-                          handleDeleteNote={handleDeleteNote}
-                        />
-                      ))}
-                    </ul>
-                  </div>
-                ) : (
-                  <ul className="flex flex-row flex-wrap items-center justify-center gap-x-16.75 gap-y-5">
-                    {notes.map((note) => (
-                      <Note
-                        key={note.id}
-                        title={note.title}
-                        content={note.content}
-                        id={note.id}
-                        pin={note.isPinned}
-                        handleView={(id: string) => {
-                          (setIsViewedMorePage(true), setNoteModal(id));
-                        }}
-                        handlePinNote={handlePinNote}
-                        handleDeleteNote={handleDeleteNote}
-                      />
-                    ))}
-                  </ul>
-                )}
+                <ul className="flex flex-row flex-wrap items-center justify-center gap-x-16.75 gap-y-5">
+                  {sortedNotes.map((note) => (
+                    <Note
+                      key={note.id}
+                      title={note.title}
+                      content={note.content}
+                      id={note.id}
+                      pin={note.isPinned}
+                      handleView={(id: string) => {
+                        (setIsViewedMorePage(true), setNoteModal(id));
+                      }}
+                      handlePinNote={handlePinNote}
+                      handleDeleteNote={handleDeleteNote}
+                    />
+                  ))}
+                </ul>
               </div>
             ) : (
               <div className="flex flex-1 items-center justify-center">

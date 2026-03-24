@@ -18,6 +18,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
 import Cookies from "js-cookie";
+import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/trash")({
   component: RouteComponent,
@@ -35,9 +36,10 @@ function RouteComponent() {
 
   const limit = 12;
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: () => getNotesFromTrash({ page, limit }),
     queryKey: ["trash-notes"],
+    staleTime: 0,
   });
 
   useEffect(() => {
@@ -68,19 +70,6 @@ function RouteComponent() {
           Cookies.set("accessToken", responce.accessToken);
         } catch {
           navigate({ to: "/signup" });
-        }
-      } else {
-        try {
-          await getNotes({ page: 1, limit: 1 });
-        } catch (error: any) {
-          if (error?.response?.status === 401) {
-            try {
-              const responce = await refresh();
-              Cookies.set("accessToken", responce.accessToken);
-            } catch {
-              navigate({ to: "/signup" });
-            }
-          }
         }
       }
     };
@@ -129,7 +118,17 @@ function RouteComponent() {
     1000,
   );
 
-  return (
+  return isLoading ? (
+    <div className="absolute z-100 flex min-h-full w-full items-center justify-center bg-neutral-800/90">
+      <MoonLoader
+        loading={isLoading}
+        color="#FFA726"
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+    </div>
+  ) : (
     <div className="relative flex min-h-screen flex-col">
       <Header
         openModalSidebar={handleOpenModalSidebar}

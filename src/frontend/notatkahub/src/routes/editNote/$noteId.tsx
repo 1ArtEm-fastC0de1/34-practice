@@ -6,22 +6,27 @@ import {
   useParams,
   useNavigate,
 } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { refresh } from "#/lib/api/authApi";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
+import Cookies from "js-cookie";
+import { MoonLoader } from "react-spinners";
 
 export const Route = createFileRoute("/editNote/$noteId")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const { noteId } = useParams({ from: "/editNote/$noteId" });
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: () => getNoteById(noteId),
-    queryKey: ["note"],
+    queryKey: ["noteEdit", noteId],
+    staleTime: 0,
   });
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
@@ -29,6 +34,21 @@ function RouteComponent() {
   const [createMode, setCreateMode] = useState<"edit" | "view">("edit");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   useEffect(() => {
     if (data?.note) {
@@ -78,13 +98,24 @@ function RouteComponent() {
 
     try {
       await updateNote({ id: noteId, title, content });
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
       navigate({ to: "/" });
     } catch (error) {
       console.log(error);
     }
   };
 
-  return (
+  return isLoading ? (
+    <div className="absolute z-100 flex min-h-full w-full items-center justify-center bg-neutral-800/90">
+      <MoonLoader
+        loading={isLoading}
+        color="#FFA726"
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
+    </div>
+  ) : (
     <div className="relative flex min-h-screen flex-col">
       <Header />
       <div className="w-full">
@@ -155,7 +186,7 @@ function RouteComponent() {
                   </div>
                 </form>
               ) : (
-                <div className="max-xl:prose dark:prose-invert h-200 w-full min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal break-all outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+                <div className="max-xl:prose dark:prose-invert h-200 min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal break-all outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
                   <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
@@ -242,7 +273,7 @@ function RouteComponent() {
                   </div>
                 </form>
               ) : (
-                <div className="prose dark:prose-invert xl:prose-xl h-100 w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+                <div className="prose dark:prose-invert xl:prose-xl h-100 min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal break-all outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
                   <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}

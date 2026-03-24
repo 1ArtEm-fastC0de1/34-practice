@@ -54,9 +54,11 @@ const MoreInfoNote = ({ id, handleClose }: MoreInfoNoteProps) => {
           />
         </div>
       ) : (
-        <div className={`relative flex min-h-full flex-col justify-between`}>
+        <div
+          className={`relative flex min-h-full min-w-full flex-col justify-between`}
+        >
           <>
-            <div className="prose dark:prose-invert mb-10 text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+            <div className="prose dark:prose-invert mb-10 min-w-full break-all text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
               <Markdown>{`# ${data?.note?.title}\n\n${data?.note?.content}`}</Markdown>
             </div>
             <div className="flex w-full justify-between self-end">

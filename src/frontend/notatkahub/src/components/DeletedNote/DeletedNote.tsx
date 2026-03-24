@@ -23,8 +23,10 @@ const DeletedNote = ({
       className="relative flex h-60 w-75 flex-col gap-3 rounded-lg bg-white p-2 text-[var(--color-primary)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]"
     >
       <div className="flex flex-1 flex-col gap-5">
-        <h3 className="w-50 font-bold">{title}</h3>
-        <p className="line-clamp-4 font-normal">{removeMd(content)}</p>
+        <h3 className="line-clamp-1 w-50 font-bold break-all">{title}</h3>
+        <p className="line-clamp-4 font-normal break-all">
+          {removeMd(content)}
+        </p>
       </div>
       <div className="flex flex-row justify-between">
         <button

@@ -43,19 +43,6 @@ function RouteComponent() {
         } catch {
           navigate({ to: "/signup" });
         }
-      } else {
-        try {
-          await getNotes({ page: 1, limit: 1 });
-        } catch (error: any) {
-          if (error?.response?.status === 401) {
-            try {
-              const responce = await refresh();
-              Cookies.set("accessToken", responce.accessToken);
-            } catch {
-              navigate({ to: "/signup" });
-            }
-          }
-        }
       }
     };
     checkToken();
@@ -152,7 +139,7 @@ function RouteComponent() {
               >
                 Email
                 <input
-                  maxLength={20}
+                  maxLength={100}
                   placeholder="Email"
                   id="email"
                   type="email"

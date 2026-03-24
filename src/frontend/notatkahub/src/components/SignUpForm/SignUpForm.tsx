@@ -59,7 +59,7 @@ const SignUpForm = () => {
         name="email"
         type="email"
         placeholder="email@gmail.com"
-        maxLength={20}
+        maxLength={100}
       />
       <input
         className={css.input}

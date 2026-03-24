@@ -148,6 +148,10 @@ function RouteComponent() {
                     value={noteTitle}
                     onChange={(e) => {
                       setNoteTitle(e.target.value);
+                      setDraft({
+                        ...draft,
+                        [e.target.name]: e.target.value,
+                      });
                     }}
                     maxLength={30}
                   />
@@ -161,6 +165,10 @@ function RouteComponent() {
                       value={noteContent}
                       onChange={(e) => {
                         setNoteContent(e.target.value);
+                        setDraft({
+                          ...draft,
+                          [e.target.name]: e.target.value,
+                        });
                       }}
                     ></textarea>
                   </div>
@@ -239,6 +247,10 @@ function RouteComponent() {
                     value={noteTitle}
                     onChange={(e) => {
                       setNoteTitle(e.target.value);
+                      setDraft({
+                        ...draft,
+                        [e.target.name]: e.target.value,
+                      });
                     }}
                     maxLength={30}
                   />
@@ -251,6 +263,10 @@ function RouteComponent() {
                       value={noteContent}
                       onChange={(e) => {
                         setNoteContent(e.target.value);
+                        setDraft({
+                          ...draft,
+                          [e.target.name]: e.target.value,
+                        });
                       }}
                     ></textarea>
                   </div>
