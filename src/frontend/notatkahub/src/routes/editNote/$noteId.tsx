@@ -27,7 +27,6 @@ function RouteComponent() {
   const [noteContent, setNoteContent] = useState("");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [createMode, setCreateMode] = useState<"edit" | "view">("edit");
-  const [availableSymbolos, setAvailableSymbols] = useState(3000);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,7 +58,6 @@ function RouteComponent() {
         .join("\n")
         .trim();
 
-      setAvailableSymbols(3000 - content.length);
       setNoteTitle(title);
       setNoteContent(content);
     };
@@ -149,20 +147,15 @@ function RouteComponent() {
                       name="content"
                       placeholder="Description"
                       id="content"
-                      maxLength={3000}
                       value={noteContent}
                       onChange={(e) => {
                         setNoteContent(e.target.value);
-                        setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
-                    <p className="font-bold text-slate-400">
-                      {availableSymbolos} symbols
-                    </p>
                   </div>
                 </form>
               ) : (
-                <div className="max-xl:prose dark:prose-invert h-200 w-full min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
+                <div className="max-xl:prose dark:prose-invert h-200 w-full min-w-full resize-none overflow-scroll rounded-lg bg-white px-4 py-2.5 font-normal break-all outline-none placeholder:text-neutral-500 dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]">
                   <Markdown>{`# ${noteTitle}\n\n${noteContent}`}</Markdown>
                 </div>
               )}
@@ -241,11 +234,9 @@ function RouteComponent() {
                       name="content"
                       placeholder="Description"
                       id="content"
-                      maxLength={3000}
                       value={noteContent}
                       onChange={(e) => {
                         setNoteContent(e.target.value);
-                        setAvailableSymbols(3000 - e.target.value.length);
                       }}
                     ></textarea>
                   </div>
@@ -256,9 +247,6 @@ function RouteComponent() {
                 </div>
               )}
               <div className="flex w-full flex-row items-center justify-between">
-                <p className="font-bold text-slate-400">
-                  {availableSymbolos} symbols
-                </p>
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="flex w-33 cursor-pointer items-center justify-center gap-3 rounded-lg bg-white py-1.5 dark:border dark:border-[var(--color-border-bars-dark)] dark:bg-[var(--color-background-bar-dark)] dark:text-[var(--color-primary-dark)]"

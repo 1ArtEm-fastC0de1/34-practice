@@ -50,12 +50,14 @@ const LogInForm = () => {
         name="email"
         type="email"
         placeholder="email@gmail.com"
+        maxLength={20}
       />
       <input
         className={css.input}
         name="password"
         type="password"
         placeholder="password"
+        maxLength={20}
       />
       <button className={css.submit_button} type="submit">
         Continue

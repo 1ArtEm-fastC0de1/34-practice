@@ -13,17 +13,20 @@ import {
 } from "#/lib/api/notesApi";
 import type { PinNoteRequest } from "#/lib/api/notesApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import Cookies from "js-cookie";
 import { MoonLoader } from "react-spinners";
 import { useDebouncedCallback } from "use-debounce";
 import Pagination from "#/components/Pagination/Pagination";
+import { refresh } from "#/lib/api/authApi";
 
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {
+  const navigate = useNavigate();
+
   const queryClient = useQueryClient();
   const [notes, setNotes] = useState<OneNote[]>([]);
   const [text, setText] = useState("");
@@ -34,7 +37,21 @@ function App() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const limit = 12;
-  const accessToken = Cookies.get("accessToken");
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["notes", page],
@@ -109,7 +126,6 @@ function App() {
 
     try {
       await pinNote({ id, pin });
-      // Оновлюємо обидва запити
       queryClient.invalidateQueries({ queryKey: ["notes", "all"] });
       queryClient.invalidateQueries({ queryKey: ["notes", page] });
     } catch {
@@ -236,7 +252,7 @@ function App() {
             ) : (
               <div className="flex flex-1 items-center justify-center">
                 <h2 className="w-77 text-center text-3xl font-semibold text-neutral-400">
-                  Here will be displayed your notes. No there are no notes
+                  Here will be displayed notes
                 </h2>
               </div>
             )}

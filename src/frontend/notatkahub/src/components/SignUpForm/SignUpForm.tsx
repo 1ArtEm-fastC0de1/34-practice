@@ -51,18 +51,22 @@ const SignUpForm = () => {
         name="username"
         type="text"
         placeholder="username"
+        minLength={5}
+        maxLength={10}
       />
       <input
         className={css.input}
         name="email"
         type="email"
         placeholder="email@gmail.com"
+        maxLength={20}
       />
       <input
         className={css.input}
         name="password"
         type="password"
         placeholder="password"
+        maxLength={20}
       />
       <button className={css.submit_button} type="submit">
         Continue

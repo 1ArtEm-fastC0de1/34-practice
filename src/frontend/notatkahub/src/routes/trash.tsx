@@ -8,19 +8,23 @@ import {
   deleteNoteFromTrash,
   reviveNote,
   searchNoteFromTrash,
+  getNotes,
 } from "#/lib/api/notesApi";
+import { refresh } from "#/lib/api/authApi";
 import type { trashNotes } from "#/types/note";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import { useDebouncedCallback } from "use-debounce";
+import Cookies from "js-cookie";
 
 export const Route = createFileRoute("/trash")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<trashNotes[]>([]);
   const [page, setPage] = useState(1);
   const [text, setText] = useState("");
@@ -54,6 +58,34 @@ function RouteComponent() {
     };
     fetchQueryNotes();
   }, [text, data]);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      } else {
+        try {
+          await getNotes({ page: 1, limit: 1 });
+        } catch (error: any) {
+          if (error?.response?.status === 401) {
+            try {
+              const responce = await refresh();
+              Cookies.set("accessToken", responce.accessToken);
+            } catch {
+              navigate({ to: "/signup" });
+            }
+          }
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   const totalPages = data?.totalPages;
 

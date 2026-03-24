@@ -41,8 +41,10 @@ const Note = ({
         />
       )}
       <div className="flex flex-1 flex-col gap-5">
-        <h3 className="w-50 font-bold">{title}</h3>
-        <p className="line-clamp-4 font-normal">{removeMd(content)}</p>
+        <h3 className="line-clamp-1 w-50 font-bold break-all">{title}</h3>
+        <p className="line-clamp-5 font-normal break-all">
+          {removeMd(content)}
+        </p>
       </div>
       <div className="flex flex-row justify-between">
         <button

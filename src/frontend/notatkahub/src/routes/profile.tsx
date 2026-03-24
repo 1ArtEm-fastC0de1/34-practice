@@ -1,7 +1,8 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
 import { useUserStore } from "#/lib/store/userStore";
-import { updateUser, logout } from "#/lib/api/authApi";
+import { updateUser, logout, refresh } from "#/lib/api/authApi";
+import { getNotes } from "#/lib/api/notesApi";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -30,6 +31,34 @@ function RouteComponent() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      } else {
+        try {
+          await getNotes({ page: 1, limit: 1 });
+        } catch (error: any) {
+          if (error?.response?.status === 401) {
+            try {
+              const responce = await refresh();
+              Cookies.set("accessToken", responce.accessToken);
+            } catch {
+              navigate({ to: "/signup" });
+            }
+          }
+        }
+      }
+    };
+    checkToken();
   }, []);
 
   const handleSubmit = async (formData: FormData) => {
@@ -112,6 +141,8 @@ function RouteComponent() {
                   id="username"
                   type="text"
                   name="username"
+                  minLength={5}
+                  maxLength={10}
                 />
               </label>
 
@@ -121,6 +152,7 @@ function RouteComponent() {
               >
                 Email
                 <input
+                  maxLength={20}
                   placeholder="Email"
                   id="email"
                   type="email"

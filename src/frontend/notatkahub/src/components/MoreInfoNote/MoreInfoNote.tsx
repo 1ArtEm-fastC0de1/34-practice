@@ -54,7 +54,7 @@ const MoreInfoNote = ({ id, handleClose }: MoreInfoNoteProps) => {
           />
         </div>
       ) : (
-        <div className={`relative flex min-h-full flex-col justify-between`}>
+        <div className={`relative flex min-h-full flex-col xl:justify-between`}>
           {windowWidth < 1280 ? (
             <>
               <div className="mb-5 flex justify-between">
@@ -74,7 +74,7 @@ const MoreInfoNote = ({ id, handleClose }: MoreInfoNoteProps) => {
                   Export note
                 </button>
               </div>
-              <div className="prose dark:prose-invert mb-10 text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+              <div className="prose dark:prose-invert mb-10 min-w-full break-all text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
                 <Markdown>{`# ${data?.note?.title}\n\n${data?.note?.content}`}</Markdown>
               </div>
               <IoCloseCircleOutline
@@ -84,7 +84,7 @@ const MoreInfoNote = ({ id, handleClose }: MoreInfoNoteProps) => {
             </>
           ) : (
             <>
-              <div className="prose dark:prose-invert mb-10 text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
+              <div className="prose dark:prose-invert mb-10 min-w-full break-all text-[var(--color-primary)] dark:text-[var(--color-primary-dark)]">
                 <Markdown>{`# ${data?.note?.title}\n\n${data?.note?.content}`}</Markdown>
               </div>
               <div className="flex w-full justify-between self-end">

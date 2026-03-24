@@ -1,13 +1,18 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
-import { createFileRoute } from "@tanstack/react-router";
+import { refresh } from "#/lib/api/authApi";
+import { getNotes } from "#/lib/api/notesApi";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 export const Route = createFileRoute("/add")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+
   const [isModalSidebarOpened, setOpenedModalSidebar] = useState(false);
 
   const handleOpenModalSidebar = () => {
@@ -22,6 +27,35 @@ function RouteComponent() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      } else {
+        try {
+          await getNotes({ page: 1, limit: 1 });
+        } catch (error: any) {
+          if (error?.response?.status === 401) {
+            try {
+              const responce = await refresh();
+              Cookies.set("accessToken", responce.accessToken);
+            } catch {
+              navigate({ to: "/signup" });
+            }
+          }
+        }
+      }
+    };
+    checkToken();
+  }, []);
+
   return (
     <div className="relative">
       <Header openModalSidebar={handleOpenModalSidebar} />

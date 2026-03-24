@@ -1,13 +1,17 @@
 import Header from "#/components/Header";
 import Sidebar from "#/components/Sidebar/Sidebar";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { getNotes } from "#/lib/api/notesApi";
+import { refresh } from "#/lib/api/authApi";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 export const Route = createFileRoute("/traveler")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
   const [isModalSidebarOpened, setOpenedModalSidebar] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
@@ -17,6 +21,35 @@ function RouteComponent() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      } else {
+        try {
+          await getNotes({ page: 1, limit: 1 });
+        } catch (error: any) {
+          if (error?.response?.status === 401) {
+            try {
+              const responce = await refresh();
+              Cookies.set("accessToken", responce.accessToken);
+            } catch {
+              navigate({ to: "/signup" });
+            }
+          }
+        }
+      }
+    };
+    checkToken();
+  }, []);
+
   const handleOpenModalSidebar = () => {
     console.log(isModalSidebarOpened);
     setOpenedModalSidebar(!isModalSidebarOpened);
