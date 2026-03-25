@@ -47,19 +47,18 @@ export default function Header({ openModalSidebar, onSearch }: Props) {
         <>
           <div className="flex items-center gap-20">
             <Logo />
-            {location.pathname == "/" ||
-              (location.pathname == "/trash" && (
-                <div className="relative">
-                  <input
-                    className="h-10 min-w-82 rounded-lg bg-white pl-10 text-black outline-none placeholder:text-neutral-500 dark:border-2 dark:border-neutral-400 dark:bg-transparent dark:text-neutral-300 dark:placeholder:text-neutral-400"
-                    type="text"
-                    name="query"
-                    placeholder="Search"
-                    onChange={onSearch}
-                  />
-                  <IoSearchOutline className="absolute top-1/2 left-2.5 left-3 -translate-y-1/2 text-neutral-500" />
-                </div>
-              ))}
+            {(location.pathname == "/" || location.pathname == "/trash") && (
+              <div className="relative">
+                <input
+                  className="h-10 min-w-82 rounded-lg bg-white pl-10 text-black outline-none placeholder:text-neutral-500 dark:border-2 dark:border-neutral-400 dark:bg-transparent dark:text-neutral-300 dark:placeholder:text-neutral-400"
+                  type="text"
+                  name="query"
+                  placeholder="Search"
+                  onChange={onSearch}
+                />
+                <IoSearchOutline className="absolute top-1/2 left-2.5 left-3 -translate-y-1/2 text-neutral-500" />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-8">
             {(location.pathname == "/" || location.pathname == "/trash") && (

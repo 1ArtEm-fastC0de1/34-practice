@@ -285,6 +285,13 @@ function RouteComponent() {
                   <FiUploadCloud width={16} height={16} />
                   <span>Import MD</span>
                 </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".md"
+                  className="hidden"
+                  onChange={handleImportMD}
+                />
               </div>
             </>
           )}
