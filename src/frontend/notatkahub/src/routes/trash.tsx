@@ -61,20 +61,20 @@ function RouteComponent() {
     fetchQueryNotes();
   }, [text, data]);
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const accessToken = Cookies.get("accessToken");
-  //     if (!accessToken) {
-  //       try {
-  //         const responce = await refresh();
-  //         Cookies.set("accessToken", responce.accessToken);
-  //       } catch {
-  //         navigate({ to: "/signup" });
-  //       }
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   const totalPages = data?.totalPages;
 

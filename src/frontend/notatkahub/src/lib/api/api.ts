@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { refresh } from "./authApi";
+import { useNavigate } from "@tanstack/react-router";
 
 export const api = axios.create({
   baseURL: "https://three4-practice.onrender.com/api",
@@ -32,6 +33,7 @@ api.interceptors.response.use(
         return response;
       } catch {
         console.log(error);
+        window.location.href = "/signUp";
         return Promise.reject(error);
       }
     }

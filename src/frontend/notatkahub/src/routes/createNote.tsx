@@ -7,6 +7,8 @@ import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import { refresh } from "#/lib/api/authApi";
 
 export const Route = createFileRoute("/createNote")({
   component: RouteComponent,
@@ -56,20 +58,20 @@ function RouteComponent() {
     reader.readAsText(file);
   };
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const accessToken = Cookies.get("accessToken");
-  //     if (!accessToken) {
-  //       try {
-  //         const responce = await refresh();
-  //         Cookies.set("accessToken", responce.accessToken);
-  //       } catch {
-  //         navigate({ to: "/signup" });
-  //       }
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);

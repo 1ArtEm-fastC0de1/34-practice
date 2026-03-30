@@ -12,6 +12,8 @@ import { FiUploadCloud } from "react-icons/fi";
 import Markdown from "react-markdown";
 import { MoonLoader } from "react-spinners";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import { refresh } from "#/lib/api/authApi";
 
 export const Route = createFileRoute("/editNote/$noteId")({
   component: RouteComponent,
@@ -34,20 +36,20 @@ function RouteComponent() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const accessToken = Cookies.get("accessToken");
-  //     if (!accessToken) {
-  //       try {
-  //         const responce = await refresh();
-  //         Cookies.set("accessToken", responce.accessToken);
-  //       } catch {
-  //         navigate({ to: "/signup" });
-  //       }
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   useEffect(() => {
     if (data?.note) {

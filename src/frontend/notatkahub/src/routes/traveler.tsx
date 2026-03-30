@@ -22,20 +22,20 @@ function RouteComponent() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const accessToken = Cookies.get("accessToken");
-  //     if (!accessToken) {
-  //       try {
-  //         const responce = await refresh();
-  //         Cookies.set("accessToken", responce.accessToken);
-  //       } catch {
-  //         navigate({ to: "/signup" });
-  //       }
-  //     }
-  //   };
-  //   checkToken();
-  // }, []);
+  useEffect(() => {
+    const checkToken = async () => {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) {
+        try {
+          const responce = await refresh();
+          Cookies.set("accessToken", responce.accessToken);
+        } catch {
+          navigate({ to: "/signup" });
+        }
+      }
+    };
+    checkToken();
+  }, []);
 
   const handleOpenModalSidebar = () => {
     console.log(isModalSidebarOpened);
